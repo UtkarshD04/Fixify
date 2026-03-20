@@ -49,9 +49,8 @@ const errors = validationResult(req);
  }
 
  const token = await user.generateAuthToken();
- console.log(token);
     res.cookie('token', token);
-    res.status(200).json({  token , user});
+    res.status(200).json({ token, user });
 
  
 }

@@ -1,108 +1,69 @@
 const http = require("http");
 const { Server } = require("socket.io");
 const app = require("./app");
-const utilityModel = require("./models/utility.model"); // provider schema
-const bookingModel = require("./models/bookings.model"); // booking schema
+const utilityModel = require("./models/utility.model");
+const bookingModel = require("./models/bookings.model");
 
-// ✅ Create HTTP server
 const server = http.createServer(app);
 
-// ✅ Socket.io setup
 const io = new Server(server, {
   cors: { origin: "*" },
 });
 
+// expose io globally for controllers
+global.io = io;
 
-// 👀 Keep track of connected users and providers
 const connectedProviders = {};
 const connectedUsers = {};
 
 io.on("connection", (socket) => {
-  // console.log("⚡ New socket connected:", socket.id);
 
-  // ✅ Provider register karega
   socket.on("registerProvider", async (providerId) => {
     connectedProviders[providerId] = socket.id;
-
-    await utilityModel.findByIdAndUpdate(providerId, {
-      socketId: socket.id,
-      status: "active",
-    });
-
-    // console.log(`✅ Provider ${providerId} registered with socket ${socket.id}`);
+    try {
+      await utilityModel.findByIdAndUpdate(providerId, {
+        socketId: socket.id,
+        status: "active",
+      });
+    } catch (err) {
+      console.error("Error updating provider socket:", err.message);
+    }
   });
-  const connectedProviders = {}; // providerId → socketId
 
-io.on("connection", (socket) => {
-  // console.log("⚡ Provider connected:", socket.id);
-
-  // registerProvider listener
-  const registerHandler = (providerId) => {
-    console.log(`Provider ${providerId} registered`);
-    socket.providerId = providerId; // store providerId if needed
-  };
-
-  socket.on("registerProvider", registerHandler);
-
-  // Clean up disconnect listener
-  const disconnectHandler = () => {
-    console.log("⚡ Provider disconnected:", socket.id);
-  };
-  socket.on("disconnect", disconnectHandler);
-
-  // OPTIONAL: cleanup if needed
-  socket.once("disconnect", () => {
-    socket.off("registerProvider", registerHandler);
-    socket.off("disconnect", disconnectHandler);
-  });
-});
-
-
-
-  // ✅ User register karega
-  socket.on("registerUser", async (userId) => {
+  socket.on("registerUser", (userId) => {
     connectedUsers[userId] = socket.id;
-
-    // Agar user ka schema me socketId hai to update karna
-    // (optional – depends on your user schema)
-    // await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
-
-    console.log(`👤 User ${userId} registered with socket ${socket.id}`);
   });
 
-  // ✅ Disconnect handling
   socket.on("disconnect", async () => {
-    // Provider disconnect check
     const providerId = Object.keys(connectedProviders).find(
       (key) => connectedProviders[key] === socket.id
     );
     if (providerId) {
       delete connectedProviders[providerId];
-      await utilityModel.findByIdAndUpdate(providerId, {
-        status: "inactive",
-        socketId: null,
-      });
-      // console.log(`❌ Provider ${providerId} disconnected`);
+      try {
+        await utilityModel.findByIdAndUpdate(providerId, {
+          status: "inactive",
+          socketId: null,
+        });
+      } catch (err) {
+        console.error("Error updating provider on disconnect:", err.message);
+      }
     }
 
-    // User disconnect check
     const userId = Object.keys(connectedUsers).find(
       (key) => connectedUsers[key] === socket.id
     );
     if (userId) {
       delete connectedUsers[userId];
-      // console.log(`❌ User ${userId} disconnected`);
     }
   });
 });
 
-
-// ------------------- Booking Route -------------------
+// Book service route
 app.post("/book-service", async (req, res) => {
   try {
     const { userId, category, details } = req.body;
 
-    // 👀 Find provider with same profession
     const provider = await utilityModel.findOne({
       profession: category,
       status: "active",
@@ -112,7 +73,6 @@ app.post("/book-service", async (req, res) => {
       return res.status(404).json({ message: "No active provider available" });
     }
 
-    // ✅ Save booking
     const booking = new bookingModel({
       userId,
       providerId: provider._id,
@@ -122,10 +82,8 @@ app.post("/book-service", async (req, res) => {
     });
     await booking.save();
 
-    // ✅ Notify provider if online
     if (connectedProviders[provider._id]) {
       io.to(connectedProviders[provider._id]).emit("newBooking", booking);
-      console.log("📨 Booking sent to provider:", provider.fullname.firstname);
     }
 
     res.status(201).json({ message: "Booking created", booking });
@@ -135,12 +93,11 @@ app.post("/book-service", async (req, res) => {
   }
 });
 
-
-// ------------------- Accept / Reject Booking -------------------
+// Accept/Reject booking route
 app.post("/booking/:id/action", async (req, res) => {
   try {
     const { id } = req.params;
-    const { action } = req.body; // "accept" ya "reject"
+    const { action } = req.body;
 
     const booking = await bookingModel.findById(id).populate("userId providerId");
     if (!booking) return res.status(404).json({ message: "Booking not found" });
@@ -157,13 +114,11 @@ app.post("/booking/:id/action", async (req, res) => {
 
     await booking.save();
 
-    // ✅ Notify User (if connected)
     if (connectedUsers[booking.userId._id]) {
       io.to(connectedUsers[booking.userId._id]).emit("bookingUpdate", {
         bookingId: booking._id,
         status: booking.status,
       });
-      console.log(`📢 User notified: Booking ${booking._id} ${booking.status}`);
     }
 
     res.json({ message: `Booking ${booking.status}`, booking });
@@ -173,24 +128,21 @@ app.post("/booking/:id/action", async (req, res) => {
   }
 });
 
-// ------------------- Get Provider Bookings -------------------
+// Get provider bookings route
 app.get("/provider/:id/bookings", async (req, res) => {
   try {
     const { id } = req.params;
-
-    const bookings = await bookingModel.find({ providerId: id })
-      .populate("userId", "fullname email")  // optional user details
+    const bookings = await bookingModel
+      .find({ providerId: id })
+      .populate("userId", "fullname email")
       .sort({ createdAt: -1 });
-
     res.json({ bookings });
   } catch (err) {
-    // console.error("❌ Error fetching provider bookings:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-// ✅ Start server
 const port = process.env.PORT || 4000;
 server.listen(port, () => {
-  console.log(`🚀 Server running at ${port}`);
+  console.log(`Server running at ${port}`);
 });
