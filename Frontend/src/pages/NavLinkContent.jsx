@@ -28,8 +28,8 @@ const NavLinkContent = () => {
   // ✅ Decide who is logged in (check localStorage for current session type)
   const currentUtilityData = sessionStorage.getItem('utilityData');
   const currentUserData = sessionStorage.getItem('userData');
-  const userToken = localStorage.getItem('userToken');
-  const providerToken = localStorage.getItem('providerToken');
+  const userToken = sessionStorage.getItem('userToken');
+  const providerToken = sessionStorage.getItem('providerToken');
 
   const isProvider = !!providerToken && !!currentUtilityData && !!utility?.email;
   const isUser = !!userToken && !!currentUserData && !!user?.email;
