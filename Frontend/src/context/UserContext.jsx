@@ -9,8 +9,8 @@ const UserContext = ({ children }) => {
   const [locationType, setLocationType] = useState("live");
 
   useEffect(() => {
-    const token = localStorage.getItem("userToken");
-    const userData = localStorage.getItem("userData");
+    const token = sessionStorage.getItem("userToken");
+    const userData = sessionStorage.getItem("userData");
 
     if (token && userData) {
       try {
@@ -29,7 +29,7 @@ const UserContext = ({ children }) => {
   // Listen for localStorage changes
   useEffect(() => {
     const handleStorageChange = () => {
-      const userData = localStorage.getItem("userData");
+      const userData = sessionStorage.getItem("userData");
       if (userData) {
         try {
           setUser(JSON.parse(userData));
@@ -45,8 +45,8 @@ const UserContext = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('userToken');
-    localStorage.removeItem('userData');
+    sessionStorage.removeItem('userToken');
+    sessionStorage.removeItem('userData');
   };
 
   return (

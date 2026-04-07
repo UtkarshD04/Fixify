@@ -58,7 +58,7 @@ export default function ProviderDashboard() {
           `${import.meta.env.VITE_BASE_URL}/utilities/profile`,
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("providerToken")}`,
+              Authorization: `Bearer ${sessionStorage.getItem("providerToken")}`,
             },
           }
         );
@@ -153,7 +153,7 @@ export default function ProviderDashboard() {
       const res = await axios.patch(
         `${baseUrl}/utilities/${providerId}/status`,
         { status: newStatus },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("providerToken")}` } }
+        { headers: { Authorization: `Bearer ${sessionStorage.getItem("providerToken")}` } }
       );
       setStatus(res.data.utility.status);
     } catch (err) {

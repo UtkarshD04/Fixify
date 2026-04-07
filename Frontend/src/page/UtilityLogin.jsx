@@ -16,7 +16,7 @@ const navigate = useNavigate();
 
   // Check if provider is already logged in
   React.useEffect(() => {
-    const utilityData = localStorage.getItem('utilityData');
+    const utilityData = sessionStorage.getItem('utilityData');
     const token = localStorage.getItem('token');
     if (utilityData && token) {
       navigate('/provider-landing');
@@ -71,8 +71,8 @@ const navigate = useNavigate();
         }
         
         setUtility(finalUtilityData);
-        localStorage.setItem('providerToken', data.token);
-        localStorage.setItem('utilityData', JSON.stringify(finalUtilityData));
+        sessionStorage.setItem('providerToken', data.token);
+        sessionStorage.setItem('utilityData', JSON.stringify(finalUtilityData));
         navigate('/provider-landing');
       }
     } catch (error) {

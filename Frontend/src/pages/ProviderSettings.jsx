@@ -26,7 +26,7 @@ const ProviderSettings = () => {
   // Load provider data on component mount
   useEffect(() => {
     const loadProviderData = () => {
-      const currentUtilityData = localStorage.getItem('utilityData');
+      const currentUtilityData = sessionStorage.getItem('utilityData');
       
       if (currentUtilityData) {
         const userData = JSON.parse(currentUtilityData);
@@ -76,7 +76,7 @@ const ProviderSettings = () => {
     setLoading(true);
     
     try {
-      const currentData = JSON.parse(localStorage.getItem('utilityData') || '{}');
+      const currentData = JSON.parse(sessionStorage.getItem('utilityData') || '{}');
       
       const updatedUtility = {
         ...currentData,
@@ -94,14 +94,14 @@ const ProviderSettings = () => {
       console.log('Updating provider profile:', updatedUtility);
 
       // Update localStorage first
-      localStorage.setItem('utilityData', JSON.stringify(updatedUtility));
+      sessionStorage.setItem('utilityData', JSON.stringify(updatedUtility));
       localStorage.setItem('tempProviderProfile', JSON.stringify(updatedUtility));
       setUtility(updatedUtility);
       window.dispatchEvent(new Event('storage'));
 
       // Save to database
       try {
-        const token = localStorage.getItem('providerToken');
+        const token = sessionStorage.getItem('providerToken');
         if (token) {
           const response = await axios.put('https://fixify-major-project.onrender.com/utilities/update-profile', updatedUtility, {
             headers: { Authorization: `Bearer ${token}` }

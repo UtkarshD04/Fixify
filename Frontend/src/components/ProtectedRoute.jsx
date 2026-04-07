@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('userToken');
-  const userData = localStorage.getItem('userData');
+  const userData = sessionStorage.getItem('userData');
 
   return (token && userData) ? children : <Navigate to="/login" replace />;
 };

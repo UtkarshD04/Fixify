@@ -9,8 +9,8 @@ const UtilityContext = ({ children }) => {
   const [error, setError] = useState(null);
  
   useEffect(() => {
-    const token = localStorage.getItem("providerToken");
-    const utilityData = localStorage.getItem("utilityData");
+    const token = sessionStorage.getItem("providerToken");
+    const utilityData = sessionStorage.getItem("utilityData");
     
     if (token && utilityData) {
       try {
@@ -29,7 +29,7 @@ const UtilityContext = ({ children }) => {
   // Listen for localStorage changes
   useEffect(() => {
     const handleStorageChange = () => {
-      const utilityData = localStorage.getItem("utilityData");
+      const utilityData = sessionStorage.getItem("utilityData");
       if (utilityData) {
         try {
           setUtility(JSON.parse(utilityData));
@@ -45,8 +45,8 @@ const UtilityContext = ({ children }) => {
 
   const logout = () => {
     setUtility(null);
-    localStorage.removeItem('providerToken');
-    localStorage.removeItem('utilityData');
+    sessionStorage.removeItem('providerToken');
+    sessionStorage.removeItem('utilityData');
   };
 
   return (

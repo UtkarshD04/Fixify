@@ -17,8 +17,8 @@ const NavLinkContent = () => {
     localStorage.removeItem("providerToken");
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminUser");
-    localStorage.removeItem("userData");
-    localStorage.removeItem("utilityData");
+    sessionStorage.removeItem("userData");
+    sessionStorage.removeItem("utilityData");
     setUser(null);
     setUtility(null);
     setIsMenuOpen(false);
@@ -26,8 +26,8 @@ const NavLinkContent = () => {
   };
 
   // ✅ Decide who is logged in (check localStorage for current session type)
-  const currentUtilityData = localStorage.getItem('utilityData');
-  const currentUserData = localStorage.getItem('userData');
+  const currentUtilityData = sessionStorage.getItem('utilityData');
+  const currentUserData = sessionStorage.getItem('userData');
   const userToken = localStorage.getItem('userToken');
   const providerToken = localStorage.getItem('providerToken');
 

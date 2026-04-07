@@ -13,7 +13,7 @@ const Settings = () => {
   const { utility, setUtility } = useContext(UtilityDataContext);
   
   // Only for regular users, not providers
-  const currentUserData = localStorage.getItem('userData');
+  const currentUserData = sessionStorage.getItem('userData');
   const currentUtilityData = localStorage.getItem('utilityData');
   
   // Redirect providers to their own settings page
@@ -99,7 +99,7 @@ const Settings = () => {
       // Get current user data from localStorage
       const currentData = isProvider 
         ? JSON.parse(localStorage.getItem('utilityData') || '{}')
-        : JSON.parse(localStorage.getItem('userData') || '{}');
+        : JSON.parse(sessionStorage.getItem('userData') || '{}');
       
       const updatedUser = {
         ...currentData,
@@ -117,7 +117,7 @@ const Settings = () => {
         localStorage.setItem('utilityData', JSON.stringify(updatedUser));
         setUtility(updatedUser);
       } else {
-        localStorage.setItem('userData', JSON.stringify(updatedUser));
+        sessionStorage.setItem('userData', JSON.stringify(updatedUser));
         setUser(updatedUser);
       }
       
@@ -128,7 +128,7 @@ const Settings = () => {
 
       // Save to database
       try {
-        const token = localStorage.getItem('userToken');
+        const token = sessionStorage.getItem('userToken');
         if (token) {
           const baseUrl = 'https://fixify-major-project.onrender.com';
           const endpoint = isProvider 
