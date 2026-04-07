@@ -29,5 +29,6 @@ router.get('/profile', authMiddleware.authUtility, utilityController.getUtilityP
 router.post('/logout', authMiddleware.authUtility, utilityController.logoutUtility); // ✅ better as POST
 
 router.patch("/:id/status", authMiddleware.authUtility, utilityController.updateStatus);
+router.put("/:id/status", authMiddleware.authUtility, utilityController.updateStatus);
 router.put('/update-profile', authMiddleware.authUtility, utilityController.updateProfile);
 module.exports = router;

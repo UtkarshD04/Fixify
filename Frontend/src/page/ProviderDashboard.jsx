@@ -36,7 +36,13 @@ let socket;
 export default function ProviderDashboard() {
   const { utility: provider, isLoading: providerLoading } = useContext(UtilityDataContext);
   const [bookings, setBookings] = useState([]);
-  const [status, setStatus] = useState("inactive");
+  const [status, setStatus] = useState(() => {
+    const stored = localStorage.getItem("utilityData");
+    if (stored) {
+      try { return JSON.parse(stored).status || "inactive"; } catch { return "inactive"; }
+    }
+    return "inactive";
+  });
   const [analytics, setAnalytics] = useState({
     successRate: 0,
     avgResponseTime: '0h',
@@ -62,7 +68,12 @@ export default function ProviderDashboard() {
             },
           }
         );
-        setStatus(response.data.utility.status || "inactive");
+        const freshStatus = response.data.utility.status || "inactive";
+        setStatus(freshStatus);
+        const stored = localStorage.getItem("utilityData");
+        if (stored) {
+          localStorage.setItem("utilityData", JSON.stringify({ ...JSON.parse(stored), status: freshStatus }));
+        }
       } catch (err) {
         console.error("❌ Failed to fetch provider status:", err);
       }
@@ -147,6 +158,7 @@ export default function ProviderDashboard() {
   // Toggle provider active/inactive
   const toggleProviderStatus = async () => {
     const newStatus = status === "active" ? "inactive" : "active";
+    setStatus(newStatus);
 
     try {
       const baseUrl = import.meta.env.VITE_BASE_URL.replace(/\/$/, '');
@@ -155,9 +167,15 @@ export default function ProviderDashboard() {
         { status: newStatus },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
-      setStatus(res.data.utility.status);
+      const confirmedStatus = res.data.utility.status;
+      setStatus(confirmedStatus);
+      const stored = localStorage.getItem("utilityData");
+      if (stored) {
+        localStorage.setItem("utilityData", JSON.stringify({ ...JSON.parse(stored), status: confirmedStatus }));
+      }
     } catch (err) {
       console.error("❌ Failed to update provider status:", err);
+      setStatus(status);
     }
   };
 

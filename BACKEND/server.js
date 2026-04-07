@@ -42,7 +42,6 @@ io.on("connection", (socket) => {
       delete connectedProviders[providerId];
       try {
         await utilityModel.findByIdAndUpdate(providerId, {
-          status: "inactive",
           socketId: null,
         });
       } catch (err) {

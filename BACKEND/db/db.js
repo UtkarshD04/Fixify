@@ -14,7 +14,7 @@
         retryWrites: true
      })
      .then(() => {
-        const isAtlas = uri.includes('mongodb+srv');
+        const isAtlas = uri.includes('mongodb+srv') || uri.includes('mongodb.net');
         const dbName = uri.split('/').pop().split('?')[0];
         console.log(`✅ Connected to ${isAtlas ? 'MongoDB Atlas' : 'MongoDB Local'} - DB: ${dbName}`);
      }).catch((err) => {
