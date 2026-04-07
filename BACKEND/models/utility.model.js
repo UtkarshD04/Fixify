@@ -59,7 +59,6 @@ const utilitySchema = new mongoose.Schema({
 
 utilitySchema.methods.generateAuthToken = async function () {
 const token = await jwt.sign({ _id: this._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
-console.log(token)
 return token;
 };
 
