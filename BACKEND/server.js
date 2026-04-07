@@ -23,7 +23,6 @@ io.on("connection", (socket) => {
     try {
       await utilityModel.findByIdAndUpdate(providerId, {
         socketId: socket.id,
-        status: "active",
       });
     } catch (err) {
       console.error("Error updating provider socket:", err.message);

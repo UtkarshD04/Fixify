@@ -9,7 +9,7 @@ const UtilityContext = ({ children }) => {
   const [error, setError] = useState(null);
  
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("providerToken");
     const utilityData = localStorage.getItem("utilityData");
     
     if (token && utilityData) {
@@ -45,7 +45,7 @@ const UtilityContext = ({ children }) => {
 
   const logout = () => {
     setUtility(null);
-    localStorage.removeItem('token');
+    localStorage.removeItem('providerToken');
     localStorage.removeItem('utilityData');
   };
 

@@ -128,7 +128,7 @@ const Settings = () => {
 
       // Save to database
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('userToken');
         if (token) {
           const baseUrl = 'https://fixify-major-project.onrender.com';
           const endpoint = isProvider 

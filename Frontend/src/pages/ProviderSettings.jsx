@@ -101,7 +101,7 @@ const ProviderSettings = () => {
 
       // Save to database
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('providerToken');
         if (token) {
           const response = await axios.put('https://fixify-major-project.onrender.com/utilities/update-profile', updatedUtility, {
             headers: { Authorization: `Bearer ${token}` }

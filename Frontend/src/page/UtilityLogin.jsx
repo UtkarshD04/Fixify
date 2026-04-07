@@ -71,7 +71,7 @@ const navigate = useNavigate();
         }
         
         setUtility(finalUtilityData);
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('providerToken', data.token);
         localStorage.setItem('utilityData', JSON.stringify(finalUtilityData));
         navigate('/provider-landing');
       }

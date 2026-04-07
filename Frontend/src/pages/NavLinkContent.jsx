@@ -13,45 +13,27 @@ const NavLinkContent = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Save profile data before logout
-    const currentUserData = localStorage.getItem('userData');
-    const currentUtilityData = localStorage.getItem('utilityData');
-    
-    // Clear auth tokens only
-    localStorage.removeItem("token");
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("providerToken");
     localStorage.removeItem("adminToken");
     localStorage.removeItem("adminUser");
-    
-    // Store profile data temporarily
-    if (currentUserData) {
-      localStorage.setItem('tempUserProfile', currentUserData);
-    }
-    if (currentUtilityData) {
-      localStorage.setItem('tempUtilityProfile', currentUtilityData);
-      localStorage.setItem('tempProviderProfile', currentUtilityData);
-    }
-    
-    // Clear user data
     localStorage.removeItem("userData");
     localStorage.removeItem("utilityData");
-    
-    // Clear context states
     setUser(null);
     setUtility(null);
     setIsMenuOpen(false);
-    
-    // Navigate without refresh
     navigate("/");
   };
 
   // ✅ Decide who is logged in (check localStorage for current session type)
   const currentUtilityData = localStorage.getItem('utilityData');
   const currentUserData = localStorage.getItem('userData');
-  const token = localStorage.getItem('token');
-  
-  const isProvider = token && currentUtilityData && utility?.email && !currentUserData;
-  const isUser = token && currentUserData && user?.email && !currentUtilityData;
-  const isGuest = !token || (!currentUtilityData && !currentUserData);
+  const userToken = localStorage.getItem('userToken');
+  const providerToken = localStorage.getItem('providerToken');
+
+  const isProvider = !!providerToken && !!currentUtilityData && !!utility?.email;
+  const isUser = !!userToken && !!currentUserData && !!user?.email;
+  const isGuest = !isProvider && !isUser;
 
   const WrenchIcon = (props) => (
     <svg {...props} width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">

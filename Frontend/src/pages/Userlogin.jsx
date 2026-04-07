@@ -56,7 +56,7 @@ const Userlogin = () => {
         }
         
         setUser(finalUserData);
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('userToken', data.token);
         localStorage.setItem('userData', JSON.stringify(finalUserData));
         navigate('/portal');
       }

@@ -72,7 +72,7 @@ export default function UserDashboard() {
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('userToken');
       if (!token) {
         alert('Please login to submit feedback');
         return;

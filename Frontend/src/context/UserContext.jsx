@@ -9,7 +9,7 @@ const UserContext = ({ children }) => {
   const [locationType, setLocationType] = useState("live");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("userToken");
     const userData = localStorage.getItem("userData");
 
     if (token && userData) {
@@ -45,8 +45,8 @@ const UserContext = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("userData");
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userData');
   };
 
   return (
