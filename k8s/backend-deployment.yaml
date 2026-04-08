@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fixify-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fixify-backend
+  template:
+    metadata:
+      labels:
+        app: fixify-backend
+    spec:
+      containers:
+        - name: fixify-backend
+          image: fixify-backend:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - secretRef:
+                name: backend-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fixify-backend-service
+spec:
+  selector:
+    app: fixify-backend
+  ports:
+    - protocol: TCP
+      port: 4000
+      targetPort: 4000
+      nodePort: 30081
+  type: NodePort
