@@ -2,12 +2,14 @@ const http = require("http");
 const { Server } = require("socket.io");
 const app = require("./app");
 const utilityModel = require("./models/utility.model");
-const bookingModel = require("./models/bookings.model");
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
-  cors: { origin: "*" },
+  cors: {
+    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:5173'],
+    methods: ['GET', 'POST']
+  },
 });
 
 // expose io globally for controllers
@@ -57,88 +59,6 @@ io.on("connection", (socket) => {
   });
 });
 
-// Book service route
-app.post("/book-service", async (req, res) => {
-  try {
-    const { userId, category, details } = req.body;
-
-    const provider = await utilityModel.findOne({
-      profession: category,
-      status: "active",
-    });
-
-    if (!provider) {
-      return res.status(404).json({ message: "No active provider available" });
-    }
-
-    const booking = new bookingModel({
-      userId,
-      providerId: provider._id,
-      category,
-      details,
-      status: "pending",
-    });
-    await booking.save();
-
-    if (connectedProviders[provider._id]) {
-      io.to(connectedProviders[provider._id]).emit("newBooking", booking);
-    }
-
-    res.status(201).json({ message: "Booking created", booking });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-// Accept/Reject booking route
-app.post("/booking/:id/action", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { action } = req.body;
-
-    const booking = await bookingModel.findById(id).populate("userId providerId");
-    if (!booking) return res.status(404).json({ message: "Booking not found" });
-
-    if (action === "accept") {
-      booking.status = "confirmed";
-    } else if (action === "reject") {
-      booking.status = "rejected";
-    } else if (action === "complete") {
-      booking.status = "completed";
-    } else {
-      return res.status(400).json({ message: "Invalid action" });
-    }
-
-    await booking.save();
-
-    if (connectedUsers[booking.userId._id]) {
-      io.to(connectedUsers[booking.userId._id]).emit("bookingUpdate", {
-        bookingId: booking._id,
-        status: booking.status,
-      });
-    }
-
-    res.json({ message: `Booking ${booking.status}`, booking });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-// Get provider bookings route
-app.get("/provider/:id/bookings", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const bookings = await bookingModel
-      .find({ providerId: id })
-      .populate("userId", "fullname email")
-      .sort({ createdAt: -1 });
-    res.json({ bookings });
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
 
 const port = process.env.PORT || 4000;
 server.listen(port, () => {

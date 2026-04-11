@@ -26,6 +26,10 @@ pids
 # Coverage directory used by tools like istanbul
 coverage/
 
+# Kubernetes secrets
+k8s/backend-secret.yaml
+k8s/mongodb-deployment.yml
+
 # IDE files
 .vscode/
 .idea/

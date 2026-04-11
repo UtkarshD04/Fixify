@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
         - name: fixify-frontend
-          image: fixify-frontend:latest
-          imagePullPolicy: Never
+          image: utkarshd0d/fixify-frontend:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
 ---

@@ -55,7 +55,7 @@ const App = () => {
       <Route path="/booking-details" element={<BookingDetails />} />
       <Route
         path="/provider-board"
-        element={<ProtectedRouteProvider><ProviderDashboard providerId="68b33c49bce45a0306416c6b" /></ProtectedRouteProvider>}
+        element={<ProtectedRouteProvider><ProviderDashboard /></ProtectedRouteProvider>}
       />
      
       <Route path="/live-city" element={<LiveCity />} />

@@ -14,13 +14,15 @@ spec:
     spec:
       containers:
         - name: fixify-backend
-          image: fixify-backend:latest
-          imagePullPolicy: Never
+          image: utkarshd0d/fixify-backend:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 4000
           envFrom:
             - secretRef:
                 name: backend-secret
+            - secretRef:
+                name: mongodb-secret
 ---
 apiVersion: v1
 kind: Service
