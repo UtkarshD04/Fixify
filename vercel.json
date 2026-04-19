@@ -1,0 +1,50 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "Frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "BACKEND/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/users/(.*)",
+      "dest": "BACKEND/server.js"
+    },
+    {
+      "src": "/utilities/(.*)",
+      "dest": "BACKEND/server.js"
+    },
+    {
+      "src": "/bookings/(.*)",
+      "dest": "BACKEND/server.js"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "BACKEND/server.js"
+    },
+    {
+      "src": "/services/(.*)",
+      "dest": "BACKEND/server.js"
+    },
+    {
+      "src": "/feedback/(.*)",
+      "dest": "BACKEND/server.js"
+    },
+    {
+      "src": "/maps/(.*)",
+      "dest": "BACKEND/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "Frontend/dist/$1"
+    }
+  ]
+}
